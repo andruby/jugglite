@@ -1,6 +1,6 @@
 # Juglight
 
-TODO: Write a gem description
+Juglight is a replacement for the incredible [Juggernaut](https://github.com/maccman/juggernaut) by Maccman. It uses [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) to push events from your application to the client's browser.
 
 ## Installation
 
@@ -18,7 +18,14 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Juglight comes with a binary. This binary runs a thin server that listens on redis for application messages and passes it along to all connected clients.
+
+You can run the binary from any terminal
+`juglight`
+
+TODO: Foreman & multiple processes
+
+TODO: Behind nginx so the client connects on one port
 
 ## Contributing
 

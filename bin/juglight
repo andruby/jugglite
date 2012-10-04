@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
 require 'juglight'
+Juglight::WebServer.supervise_as :reel
+sleep

@@ -3,27 +3,20 @@ module Juglight
     include EventMachine::Deferrable
 
     def initialize
-      @queue = []
+      @queue = EM::Queue.new
     end
 
-    def schedule_dequeue
-      return unless @body_callback
-      EventMachine::next_tick do
-        next unless body = @queue.shift
-        @body_callback.call(body)
-        schedule_dequeue unless @queue.empty?
-      end
-    end
-
-    def <<(body)
-      @queue << body
-      schedule_dequeue
+    def write(body)
+      @queue.push(body)
     end
 
     def each &blk
       @body_callback = blk
-      schedule_dequeue
+      processor = proc { |item|
+        @body_callback.call(item)
+        @queue.pop(&processor)
+      }
+      @queue.pop(&processor)
     end
-
   end
 end

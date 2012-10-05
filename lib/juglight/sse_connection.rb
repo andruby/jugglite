@@ -18,6 +18,11 @@ module Juglight
       @body.write(buffer << "\n")
     end
 
+    def keepalive
+      # From http://dev.w3.org/html5/eventsource/#notes
+      @body.write(": keepalive\n")
+    end
+
     def close
       @body.succeed
     end

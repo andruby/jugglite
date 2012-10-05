@@ -10,15 +10,16 @@ module Juglight
     def initialize()
       @subscription_map = {}
       EventMachine::next_tick { setup_redis }
+      EventMachine::next_tick { setup_keepalive }
     end
 
     def call(env)
       request = Rack::Request.new(env)
       connection = SseConnection.new(request)
-      register_connection(connection)
 
-      # Get the headers out there asap, let the client know we're alive...
+      # Get the headers out there, let the client know we're alive...
       EventMachine::next_tick do
+        register_connection(connection)
         # Calling thin's Connection.post_process([status, headers, body])
         # This is how you start a response to the client asynchronously
         env['async.callback'].call [200, Headers, connection.body]
@@ -38,6 +39,15 @@ module Juglight
       @async_redis = EM::Hiredis.connect
       @async_redis.on(:message) do |channel, message|
         expedite_incoming_message(channel, message)
+      end
+    end
+
+    def setup_keepalive
+      EventMachine::add_periodic_timer(20) do
+        @subscription_map.each_key do |connection|
+          # Need EM::Iterator
+          connection.keepalive
+        end
       end
     end
 
@@ -66,6 +76,7 @@ module Juglight
 
     def expedite_incoming_message(channel, message)
       no_connection_listening = true
+      # Select upfront and use EM::Iterator
       @subscription_map.each do |connection, channels|
         if channels.include?(channel)
           connection.write message

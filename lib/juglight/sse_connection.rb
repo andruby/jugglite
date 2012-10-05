@@ -8,10 +8,14 @@ module Juglight
     end
 
     def write(message, options = {})
-      options.each do |k,v|
-        @body << "#{k}: #{v}\n"
+      buffer = ""
+      options.each do |k, v|
+        buffer << "#{k}: #{v}\n"
       end
-      @body << "data: #{message}\n\n"
+      message.each_line do |line|
+        buffer << "data: #{line.strip}\n"
+      end
+      @body.write(buffer << "\n")
     end
 
     def close

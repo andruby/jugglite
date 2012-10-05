@@ -4,7 +4,6 @@ module Juglight
 
     def initialize
       @queue = []
-      # make sure to flush out the queue before closing the connection
     end
 
     def schedule_dequeue

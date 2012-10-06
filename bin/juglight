@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 
-host = '127.0.0.1'
-port = ENV['PORT'] || 3000
+host = ENV['HOST'] || '127.0.0.1'
+port = (ENV['PORT'] || 3000).to_i
+file_descriptors = (ENV['FD_SIZE'] || 202400).to_i
 
-# require 'juglight'
-require_relative '../lib/juglight'
+require 'juglight'
 
-new_size = EM.set_descriptor_table_size( 20480 )
-STDERR.puts "New descriptor-Table size is #{new_size}"
+new_size = EM.set_descriptor_table_size( file_descriptors )
+STDERR.puts "New descriptor-table size is #{new_size}"
 EM.epoll
+EM.kqueue
 
 Thin::Server.start(host, port, Juglight::App.new)

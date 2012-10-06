@@ -1,5 +1,5 @@
 # Will try to open as many connections as possible
-# at a rate of 1000 new connections per second.
+# at a rate of about 500 new connections per second.
 # Every 2 seconds the script will print out the number of:
 # connections triggered, connections that received headers,
 # connections failed and connections finished.
@@ -16,7 +16,7 @@
 
 host = ENV['HOST'] || '127.0.0.1'
 port = (ENV['PORT'] || 3000).to_i
-$between_time = 1.0 / (ENV['RATE'] || 1000).to_i
+$between_time = 1.0 / (ENV['RATE'] || 2000).to_i
 file_descriptors = (ENV['FD_SIZE'] || 202400).to_i
 $url = "http://#{host}:#{port}/"
 
@@ -29,7 +29,6 @@ STDERR.puts "New EventMachine descriptor-table size is #{new_size}"
 EM.epoll
 EM.kqueue
 
-$start_time = Time.now
 $trigger_count = 0
 $headers_count = 0
 $error_count = 0
@@ -43,16 +42,11 @@ def connect_to_stream(counter)
 end
 
 EM.run do
-  @queue = EM::Queue.new
-  dequeue = proc { |counter|
-    connect_to_stream(counter)
-    @queue.pop(&dequeue)
-  }
-  @queue.pop(&dequeue)
-
   launch_timer = EventMachine::add_periodic_timer($between_time) do
-    @queue.push($trigger_count+=1)
+    connect_to_stream($trigger_count+=1)
   end
+
+  EM::next_tick { $start_time = Time.now } # Set the start time
 
   monitor_timer = EventMachine::add_periodic_timer(2) do
     secs_elapsed = (Time.now - $start_time).round

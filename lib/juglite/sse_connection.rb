@@ -20,7 +20,11 @@ module Juglite
 
     def keepalive(extra=nil)
       # From http://dev.w3.org/html5/eventsource/#notes
-      @body.write(": keepalive #{extra}\n")
+      comment("keepalive #{extra}")
+    end
+
+    def comment(comment)
+      @body.write(": #{comment}\n")
     end
 
     def close

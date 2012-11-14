@@ -16,6 +16,7 @@ module Juglite
         path: '/stream',
         keepalive_timeout: 20
       })
+      STDERR.puts "Registered Juglite to listen to #{@options[:path]}"
       @subscription_map = {}
       EventMachine::next_tick { setup_redis }
       EventMachine::next_tick { setup_keepalive }

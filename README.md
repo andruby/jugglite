@@ -1,12 +1,12 @@
-# Juglight
+# Juglite
 
-Juglight is a replacement for the incredible [Juggernaut](https://github.com/maccman/juggernaut) by Maccman. It uses [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) to push events from your application to the client's browser.
+Juglite is a replacement for the incredible [Juggernaut](https://github.com/maccman/juggernaut) by Maccman. It uses [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) to push events from your application to the client's browser.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'juglight'
+    gem 'juglite'
 
 And then execute:
 
@@ -14,14 +14,14 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install juglight
+    $ gem install juglite
 
 ## Usage
 
-Juglight comes with a binary. This binary runs a thin server that listens on redis for application messages and passes it along to all connected clients.
+Juglite comes with a binary. This binary runs a thin server that listens on redis for application messages and passes it along to all connected clients.
 
 You can run the binary from any terminal
-`juglight`
+`juglite`
 
 TODO: Foreman & multiple processes
 
@@ -37,4 +37,4 @@ TODO: Behind nginx so the client connects on one port
 
 ## License
 
-Juglight is licensed under the [MIT license](http://opensource.org/licenses/MIT).
+Juglite is licensed under the [MIT license](http://opensource.org/licenses/MIT).

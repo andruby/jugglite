@@ -1,7 +1,7 @@
 require 'set'
 require 'em-hiredis'
 
-module Juglight
+module Juglite
   # Let's go for plain Rack y'all
   class App
     AsyncResponse = [-1, {}, []].freeze
@@ -44,9 +44,10 @@ module Juglight
 
     def setup_keepalive
       EventMachine::add_periodic_timer(20) do
+        count = @subscription_map.count
         @subscription_map.each_key do |connection|
           # Need EM::Iterator
-          connection.keepalive
+          connection.keepalive(count)
         end
       end
     end

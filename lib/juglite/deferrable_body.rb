@@ -1,4 +1,4 @@
-module Juglight
+module Juglite
   class DeferrableBody
     include EventMachine::Deferrable
 

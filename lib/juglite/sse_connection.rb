@@ -1,4 +1,4 @@
-module Juglight
+module Juglite
   class SseConnection
     attr_reader :body, :request
 
@@ -18,9 +18,9 @@ module Juglight
       @body.write(buffer << "\n")
     end
 
-    def keepalive
+    def keepalive(extra=nil)
       # From http://dev.w3.org/html5/eventsource/#notes
-      @body.write(": keepalive\n")
+      @body.write(": keepalive #{extra}\n")
     end
 
     def close

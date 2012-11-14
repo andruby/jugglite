@@ -18,7 +18,7 @@ host = ENV['HOST'] || '127.0.0.1'
 port = (ENV['PORT'] || 3000).to_i
 $between_time = 1.0 / (ENV['RATE'] || 2000).to_i
 file_descriptors = (ENV['FD_SIZE'] || 202400).to_i
-$url = "http://#{host}:#{port}/"
+$url = "http://#{host}:#{port}/stream"
 
 require 'eventmachine'
 require 'redis'

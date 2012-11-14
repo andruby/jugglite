@@ -7,13 +7,30 @@ module Juglite
     AsyncResponse = [-1, {}, []].freeze
     Headers = {'Content-Type' => 'text/event-stream;charset=utf-8'}
 
-    def initialize()
+    # Options include:
+    # +path+ : the URI path to listen to ('/stream')
+    # +keepalive_timeout+ : the timeout in seconds between keepalive comments
+    def initialize(app, options = {})
+      @app = app
+      @options = options.reverse_merge({
+        path: '/stream',
+        keepalive_timeout: 20
+      })
       @subscription_map = {}
       EventMachine::next_tick { setup_redis }
       EventMachine::next_tick { setup_keepalive }
     end
 
     def call(env)
+      if env["PATH_INFO"] == @options[:path]
+        handle_stream(env)
+      else
+        @app.call(env)
+      end
+    end
+
+    private
+    def handle_stream(env)
       request = Rack::Request.new(env)
       connection = SseConnection.new(request)
 
@@ -23,17 +40,20 @@ module Juglite
         # Calling thin's Connection.post_process([status, headers, body])
         # This is how you start a response to the client asynchronously
         env['async.callback'].call [200, Headers, connection.body]
+        connection.comment("registered to channels: #{channels_for_request(request).to_a.join(', ')}")
       end
 
       connection.callback { unregister_connection(connection) }
       connection.errback { unregister_connection(connection) }
+
+      # Needed for crappy Rack::Lint
+      throw :async
 
       # Returning a status of -1 keeps the connection open
       # You need to use env['async.callback'].call to send the status, headers & body later
       AsyncResponse
     end
 
-    private
     def setup_redis
       @redis_channels = Set.new
       @async_redis = EM::Hiredis.connect
@@ -43,22 +63,22 @@ module Juglite
     end
 
     def setup_keepalive
-      EventMachine::add_periodic_timer(20) do
+      EventMachine::add_periodic_timer(@options[:keepalive_timeout]) do
         count = @subscription_map.count
         @subscription_map.each_key do |connection|
-          # Need EM::Iterator
           connection.keepalive(count)
         end
       end
     end
 
-    def get_channels_from_request(request)
-      # TODO: extract the requested channels from the request
-      Set.new(["broadcast", "private"])
+    def channels_for_request(request)
+      # TODO: Sanitize? Check signature?
+      channel = Array(request.params["channel"])
+      Set.new(channel)
     end
 
     def register_connection(connection)
-      requested_channels = get_channels_from_request(connection.request)
+      requested_channels = channels_for_request(connection.request)
       subscribe_to_new_channels(requested_channels - @redis_channels)
       @subscription_map[connection] = requested_channels
     end

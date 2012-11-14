@@ -11,4 +11,5 @@ STDERR.puts "New descriptor-table size is #{new_size}"
 EM.epoll
 EM.kqueue
 
+STDERR.puts "Starting server at #{host}:#{port}"
 Thin::Server.start(host, port, Juglite::App.new)

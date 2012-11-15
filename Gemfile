@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in juglite.gemspec
+# Specify your gem's dependencies in jugglite.gemspec
 gemspec

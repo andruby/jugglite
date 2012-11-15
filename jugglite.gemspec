@@ -1,16 +1,16 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'juglite/version'
+require 'jugglite/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "juglite"
-  gem.version       = Juglite::VERSION
+  gem.name          = "jugglite"
+  gem.version       = Jugglite::VERSION
   gem.authors       = ["andruby"]
   gem.email         = ["andrew@bedesign.be"]
   gem.description   = %q{Lightweight SSE server}
   gem.summary       = %q{Replacement for Juggernaut that uses Server Sent Events for real time push}
-  gem.homepage      = "http://github.com/andruby/juglite"
+  gem.homepage      = "http://github.com/andruby/jugglite"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

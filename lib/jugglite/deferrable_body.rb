@@ -1,4 +1,4 @@
-module Juglite
+module Jugglite
   class DeferrableBody
     include EventMachine::Deferrable
 

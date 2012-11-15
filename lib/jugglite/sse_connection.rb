@@ -1,4 +1,4 @@
-module Juglite
+module Jugglite
   class SseConnection
     attr_reader :body, :request
 

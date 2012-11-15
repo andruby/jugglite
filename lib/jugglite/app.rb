@@ -1,7 +1,7 @@
 require 'set'
 require 'em-hiredis'
 
-module Juglite
+module Jugglite
   # Let's go for plain Rack y'all
   class App
     AsyncResponse = [-1, {}, []].freeze
@@ -16,7 +16,7 @@ module Juglite
         path: '/stream',
         keepalive_timeout: 20
       }.merge(options)
-      STDERR.puts "Registered Juglite to listen to #{@options[:path]}"
+      STDERR.puts "Registered Jugglite to listen to #{@options[:path]}"
       @subscription_map = {}
       EventMachine::next_tick { setup_redis }
       EventMachine::next_tick { setup_keepalive }

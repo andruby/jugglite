@@ -1,3 +1,3 @@
-module Juglite
+module Jugglite
   VERSION = "0.0.1.alpha"
 end

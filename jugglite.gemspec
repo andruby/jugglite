@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["andruby"]
   gem.email         = ["andrew@bedesign.be"]
   gem.description   = %q{Lightweight SSE server}
-  gem.summary       = %q{Replacement for Juggernaut that uses Server Sent Events for real time push}
+  gem.summary       = %q{Server Sent Events server written in rack on top of thin inspired by Juggernaut for real time push}
   gem.homepage      = "http://github.com/andruby/jugglite"
 
   gem.files         = `git ls-files`.split($/)

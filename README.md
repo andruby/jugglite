@@ -1,5 +1,7 @@
 # Jugglite
 
+[![Build Status](https://secure.travis-ci.org/andruby/jugglite.png?branch=master)](https://travis-ci.org/andruby/jugglite)
+
 Jugglite is a replacement for the incredible [Juggernaut](https://github.com/maccman/juggernaut) by Maccman. It uses [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) to push events from your application to the client's browser.
 
 ## Installation

@@ -19,4 +19,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('thin')
   gem.add_dependency('em-hiredis')
+  gem.add_development_dependency('redis')
+  gem.add_development_dependency('rspec')
 end

@@ -10,12 +10,12 @@ module Juglite
     # Options include:
     # +path+ : the URI path to listen to ('/stream')
     # +keepalive_timeout+ : the timeout in seconds between keepalive comments
-    def initialize(app, options = {})
+    def initialize(app = nil, options = {})
       @app = app
-      @options = options.reverse_merge({
+      @options = {
         path: '/stream',
         keepalive_timeout: 20
-      })
+      }.merge(options)
       STDERR.puts "Registered Juglite to listen to #{@options[:path]}"
       @subscription_map = {}
       EventMachine::next_tick { setup_redis }
@@ -23,7 +23,7 @@ module Juglite
     end
 
     def call(env)
-      if env["PATH_INFO"] == @options[:path]
+      if @app.nil? || (env["PATH_INFO"] == @options[:path])
         handle_stream(env)
       else
         @app.call(env)

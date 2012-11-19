@@ -1,15 +1,20 @@
 #!/usr/bin/env ruby
-
-host = ENV['HOST'] || '127.0.0.1'
-port = (ENV['PORT'] || 3000).to_i
-file_descriptors = (ENV['FD_SIZE'] || 202400).to_i
-
 require 'jugglite'
 
-new_size = EM.set_descriptor_table_size( file_descriptors )
-STDERR.puts "New descriptor-table size is #{new_size}"
-EM.epoll
-EM.kqueue
+# You may use (almost) all options you would pass to thin
+# eg: --max-conns NUM (might require a higher system "ulimit -n" setting)
+# --port PORT
+# --address HOST
+options = Thin::Runner.new(ARGV).options
+thin = Thin::Server.new(Jugglite::App.new, options[:port], options[:address], options)
 
-STDERR.puts "Starting server at #{host}:#{port}"
-Thin::Server.start(host, port, Jugglite::App.new)
+# Need to increase the descriptor-table for EventMachine
+if options[:max_conns]
+  new_size = EM.set_descriptor_table_size( options[:max_conns].to_i )
+  STDERR.puts "New descriptor-table size is #{new_size}"
+  EM.epoll
+  EM.kqueue
+  thin.maximum_connections = options[:max_conns] # Need to do this manually because it gets overriden on thin/server.rb:123
+end
+
+thin.start!

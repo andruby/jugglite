@@ -16,7 +16,6 @@ module Jugglite
         path: '/stream',
         keepalive_timeout: 20
       }.merge(options)
-      STDERR.puts "Registered Jugglite to listen to #{@options[:path]}"
       @subscription_map = {}
       EventMachine::next_tick { setup_redis }
       EventMachine::next_tick { setup_keepalive }

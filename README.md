@@ -18,16 +18,72 @@ Or install it yourself as:
 
     $ gem install jugglite
 
-## Usage
+## Server Usage
+
+I use jugglite as rack middleware in development and as a standalone cluster in production behind nginx.
+
+### Stand-alone binary
 
 Jugglite comes with a binary. This binary runs a thin server that listens on redis for application messages and passes it along to all connected clients.
 
-You can run the binary from any terminal
-`jugglite`
+You can run the binary from any terminal like this (these options are the defaults):
 
-TODO: Foreman & multiple processes
+`jugglite --address 0.0.0.0 --port 3000 --max-conns 1024`
 
-TODO: Behind nginx so the client connects on one port
+### As rack middleware
+
+Add it to your `config.ru` file:
+`use Juglite::App, path: '/stream'` (use the `path` option )
+
+### As a cluster behind Nginx reverse proxy
+
+NOTE: because the html5 SSE implementation requires the connection to have the same hostname and port, you'll need to add a reverse proxy in front of your app and jugglite.
+
+TODO with Foreman?
+
+## Client Usage
+
+Use the browser's native [Server-Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) implementation:
+
+```javascript
+  es = new EventSource('/stream?channel=yourchannelname');
+
+  es.addEventListener('message', function(e) {
+    // Do something with the data
+    console.log(e.data);
+    // If you JSON encoded the message
+    msg = jQuery.parseJSON(e.data);
+    }, false);
+
+  es.onopen = function(e) {
+    // Connection was opened.
+  };
+
+  es.onerror = function(e) {
+    if (e.readyState == EventSource.CLOSED) {
+      // Connection was closed.
+    } else {
+      // Some other error?
+    };
+  };
+```
+
+To support older browsers, use [Remy's](http://html5doctor.com/server-sent-events/) excellent [Pollyfill](https://github.com/remy/polyfills/blob/master/EventSource.js). It does revert to ajax long polling for browsers without a native EventSource implementation. Supports almost every old browser (even IE7).
+
+## Sending messages
+
+Use your favorite Redis client to simply publish messages to the channel your clients are subscribing to:
+
+```ruby
+redis = Redis.new
+redis.publish('yourchannelname', 'This is a message')
+# You may want to JSON encode your data
+redis.publish('yourchannelname', {hello: 'world', number: 47}.to_json)
+```
+
+## Performance
+
+It's been tested on a local machine with the `spec/benchmark/max_connections.rb` spec up to 16K concurrent connections.
 
 ## Contributing
 

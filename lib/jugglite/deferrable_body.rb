@@ -10,7 +10,7 @@ module Jugglite
       @queue.push(body)
     end
 
-    def each &blk
+    def each(&blk)
       @body_callback = blk
       processor = proc { |item|
         @body_callback.call(item)

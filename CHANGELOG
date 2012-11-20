@@ -1,0 +1,11 @@
+= 0.0.3 / Not Yet Released
+
+ * TODO: add support for Remy's Polyfill
+
+= 0.0.2.alpha / Not Yet Released
+
+ * standalone binary supports thin commandline options
+
+= 0.0.1.alpha / 2012-11-15
+
+ * Initial gem release

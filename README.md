@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/andruby/jugglite.png?branch=master)](https://travis-ci.org/andruby/jugglite)
 
-Jugglite is a replacement for the incredible [Juggernaut](https://github.com/maccman/juggernaut) by Maccman. It uses [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) to push events from your application to the client's browser.
+Jugglite is a replacement for the incredible [Juggernaut](https://github.com/maccman/juggernaut) by Maccman. It uses [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) to push events from your application to the client's browser. It uses [Redis](http://www.redis.io) for publish/subscribe and [Thin](http://code.macournoyer.com/thin/) + [EventMachine](https://github.com/eventmachine/eventmachine) to run an evented server that can handle 10K+ concurrent connections.
 
 ## Installation
 

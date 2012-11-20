@@ -25,6 +25,7 @@ module Jugglite
       if @app.nil? || (env["PATH_INFO"] == @options[:path])
         handle_stream(env)
       else
+        # Running as middleware and path did not match so pass it along
         @app.call(env)
       end
     end

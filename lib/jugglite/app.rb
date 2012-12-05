@@ -5,7 +5,10 @@ module Jugglite
   # Let's go for plain Rack y'all
   class App
     AsyncResponse = [-1, {}, []].freeze
-    Headers = {'Content-Type' => 'text/event-stream;charset=utf-8'}
+    Headers = {
+      'Content-Type' => 'text/event-stream;charset=utf-8',
+      'Cache-Control' => 'no-cache' # IE (through the Polyfill) will trip without this
+    }
 
     # Options include:
     # +path+ : the URI path to listen to ('/stream')

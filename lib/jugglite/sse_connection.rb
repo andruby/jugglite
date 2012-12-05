@@ -9,12 +9,8 @@ module Jugglite
 
     def write(message, options = {})
       buffer = ""
-      options.each do |k, v|
-        buffer << "#{k}: #{v}\n"
-      end
-      message.each_line do |line|
-        buffer << "data: #{line.strip}\n"
-      end
+      options.each { |k, v| buffer << "#{k}: #{v}\n" }
+      message.each_line { |line| buffer << "data: #{line.strip}\n" }
       @body.write(buffer << "\n")
     end
 

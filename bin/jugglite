@@ -1,12 +1,15 @@
 #!/usr/bin/env ruby
 require 'jugglite'
 
-# You may use (almost) all options you would pass to thin
-# eg: --max-conns NUM (might require a higher system "ulimit -n" setting)
+# You can use some of the options you would pass to thin
+# eg:
+# --max-conns NUM (might require a higher system "ulimit -n" setting)
 # --port PORT
 # --address HOST
+# --socket FILE
 options = Thin::Runner.new(ARGV).options
-thin = Thin::Server.new(Jugglite::App.new, options[:port], options[:address], options)
+listen_options = if options[:socket] then [options[:socket]] else [options[:address], options[:port]] end
+thin = Thin::Server.new(Jugglite::App.new, *listen_options, options)
 
 # Need to increase the descriptor-table for EventMachine
 if options[:max_conns]

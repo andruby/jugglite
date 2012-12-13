@@ -1,3 +1,7 @@
+= 0.0.4 / 2012-12-13
+
+ * support for listening to a unix socket using the --socket commandline option
+
 = 0.0.3 / 2012-11-04
 
  * support for Remy's Polyfill (which adds support for IE7+)

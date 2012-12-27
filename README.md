@@ -32,14 +32,58 @@ You can run the binary from any terminal like this (these options are the defaul
 
 ### As rack middleware
 
-Add it to your `config.ru` file:
-`use Juglite::App, path: '/stream'` (use the `path` option )
+Add it to your `config.ru` file and make sure your application runs using Thin:
+`use Juglite::App, path: '/stream'` (use the `path` option)
 
 ### As a cluster behind Nginx reverse proxy
 
 NOTE: because the html5 SSE implementation requires the connection to have the same hostname and port, you'll need to add a reverse proxy in front of your app and jugglite.
 
-TODO with Foreman?
+This is an example nginx configuration with Unicorn and Jugglite. Make sure you set `proxy_buffering off;` in your Nginx configuration.
+
+```nginx
+# Start jugglite with: jugglite --socket /tmp/jugglite.sock
+upstream jugglite-example {
+  server unix:/tmp/jugglite.sock fail_timeout=0;
+}
+
+# Start unicorn with: unicorn --listen /tmp/unicorn.sock --config-file unicorn_conf.rb
+upstream unicorn-example {
+  server unix:/tmp/unicorn.sock fail_timeout=0;
+}
+
+server {
+  listen [::]:80 deferred;
+  server_name example.com;
+  root /var/www/example/current/public;
+
+  # Let Nginx serve assets statically
+  location ^~ /assets/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+
+  # Forward /stream to Jugglite and set proxy_buffering off
+  location ^~ /stream {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_buffering off;
+    proxy_pass http://jugglite-example;
+  }
+
+  # Forward all other requests to Unicorn
+  try_files $uri/index.html $uri @unicorn;
+  location @unicorn {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://unicorn-example;
+  }
+}
+```
+
 
 ## Client Usage
 

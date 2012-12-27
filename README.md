@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Server Usage
 
-I use jugglite as rack middleware in development and as a standalone cluster in production behind nginx.
+I use jugglite as rack middleware in development and as a standalone binary behind nginx in production.
 
 ### Stand-alone binary
 
@@ -30,12 +30,18 @@ You can run the binary from any terminal like this (these options are the defaul
 
 `jugglite --address 0.0.0.0 --port 3000 --max-conns 1024`
 
-### As rack middleware
+### As Rack middleware (development)
 
 Add it to your `config.ru` file and make sure your application runs using Thin:
-`use Juglite::App, path: '/stream'` (use the `path` option)
 
-### As a cluster behind Nginx reverse proxy
+```ruby
+require ::File.expand_path('../config/environment',  __FILE__)
+# Embed Jugglite when running in development
+use Jugglite::App, path: '/stream' if ENV['RACK_ENV'] == 'development'
+run MyRails::Application
+```
+
+### Behind Nginx (production)
 
 NOTE: because the html5 SSE implementation requires the connection to have the same hostname and port, you'll need to add a reverse proxy in front of your app and jugglite.
 

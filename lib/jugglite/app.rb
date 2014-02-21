@@ -60,7 +60,7 @@ module Jugglite
 
     def setup_redis
       @redis_channels = Set.new
-      @async_redis = EM::Hiredis.connect
+      @async_redis = EM::Hiredis.connect.pubsub
       @async_redis.on(:message) do |channel, message|
         expedite_incoming_message(channel, message)
       end

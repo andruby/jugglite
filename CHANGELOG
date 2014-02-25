@@ -1,3 +1,11 @@
+= 0.2.0 / 2014-02-25
+
+ * If message is JSON, extract 'event' and 'id' from the message
+
+= 0.1.0 / 2014-02-21
+
+ * Compatible with newer em-hiredis
+
 = 0.0.4 / 2012-12-13
 
  * support for listening to a unix socket using the --socket commandline option

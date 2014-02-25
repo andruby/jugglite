@@ -101,10 +101,11 @@ module Jugglite
 
     def expedite_incoming_message(channel, message)
       no_connection_listening = true
+      options = extract_options_from_message(message)
       # Select upfront and use EM::Iterator
       @subscription_map.each do |connection, channels|
         if channels.include?(channel)
-          connection.write message
+          connection.write message, options
           no_connection_listening = false
         end
       end
@@ -117,6 +118,17 @@ module Jugglite
         @async_redis.unsubscribe(channel)
         @redis_channels.delete(channel)
       end
+    end
+
+    def extract_options_from_message(message)
+      data = JSON.parse(message)
+      options = {}
+      options['event'] = data.delete('event') if data['event']
+      options['id'] = data.delete('id') if data['id']
+      options
+    rescue JSON::ParserError
+      # The message is not valid json, so we are not able to extract options
+      {}
     end
   end
 end

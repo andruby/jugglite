@@ -37,7 +37,7 @@ Add it to your `config.ru` file and make sure your application runs using Thin:
 ```ruby
 require ::File.expand_path('../config/environment',  __FILE__)
 # Embed Jugglite when running in development
-use Jugglite::App, path: '/stream' if ENV['RACK_ENV'] == 'development'
+use Jugglite::App, path: '/stream', namespace: 'myapp:' if ENV['RACK_ENV'] == 'development'
 run MyRails::Application
 ```
 

@@ -17,6 +17,7 @@ module Jugglite
       @app = app
       @options = {
         path: '/stream',
+        namespace: '',
         keepalive_timeout: 20
       }.merge(options)
       @subscription_map = {}
@@ -77,8 +78,9 @@ module Jugglite
 
     def channels_for_request(request)
       # TODO: Sanitize? Check signature?
-      channel = Array(request.params["channel"])
-      Set.new(channel)
+      channels = Array(request.params["channel"])
+      channels.map! { |channel| @options[:namespace] + channel }
+      Set.new(channels)
     end
 
     def register_connection(connection)

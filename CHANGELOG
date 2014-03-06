@@ -1,3 +1,7 @@
+= 0.3.0 / 2014-03-06
+
+ * Support redis namespace option
+
 = 0.2.0 / 2014-02-25
 
  * If message is JSON, extract 'event' and 'id' from the message

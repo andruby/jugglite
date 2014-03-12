@@ -78,7 +78,7 @@ module Jugglite
 
     def channels_for_request(request)
       # TODO: Sanitize? Check signature?
-      channels = Array(request.params["channel"])
+      channels = Array(request.params["channel"].split(","))
       channels.map! { |channel| @options[:namespace] + channel }
       Set.new(channels)
     end

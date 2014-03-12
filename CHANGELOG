@@ -1,3 +1,7 @@
+= 0.4.0 / 2014-03-12
+
+ * Support for listening to multiple channels
+
 = 0.3.0 / 2014-03-06
 
  * Support redis namespace option

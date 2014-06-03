@@ -11,8 +11,12 @@ module Jugglite
     }
 
     # Options include:
-    # +path+ : the URI path to listen to ('/stream')
-    # +keepalive_timeout+ : the timeout in seconds between keepalive comments
+    # +path+ : the URI path to listen to (defaults to '/stream')
+    # +keepalive_timeout+ : the timeout in seconds between keepalive comments (defaults to 20)
+    # +namespace+ : a namespace used as prefix for redis pubsub channels
+    # +allowed_channels+ :
+    #  * an array with allowed channel names
+    #  * a proc that takes a Rack::Request and returns an array of allowed channels for that particular request
     def initialize(app = nil, options = {})
       @app = app
       @options = {
@@ -51,7 +55,7 @@ module Jugglite
       connection.callback { unregister_connection(connection) }
       connection.errback { unregister_connection(connection) }
 
-      # Needed for crappy Rack::Lint
+      # Needed for Rack::Lint
       throw :async
 
       # Returning a status of -1 keeps the connection open
@@ -77,10 +81,19 @@ module Jugglite
     end
 
     def channels_for_request(request)
-      # TODO: Sanitize? Check signature?
       channels = Array(request.params["channel"].split(","))
+      # Sanitize channels
+      channels = channels & allowed_channels(request) if @options[:allowed_channels]
       channels.map! { |channel| @options[:namespace] + channel }
       Set.new(channels)
+    end
+
+    def allowed_channels(request)
+      case @options[:allowed_channels]
+      when Proc then @options[:allowed_channels].call(request)
+      when Array then @options[:allowed_channels]
+      else raise(ArgumentError, ":allowed_channels should be nil, Array or a Proc")
+      end
     end
 
     def register_connection(connection)

@@ -20,7 +20,26 @@ Or install it yourself as:
 
 ## Server Usage
 
-I use jugglite as rack middleware in development and as a standalone binary behind nginx in production.
+I used to use Jugglite as rack middleware in development and as a standalone binary behind nginx in production. Nowadays I run my rails application using thin in production so I can mount Jugglite in the routes.rb file.
+
+### Inside Rails's routes.rb
+
+This only works with an EventMachine based webserver that supports rack's async.callback. I have only tested this in production with Thin, but it might work with Rainbows or Puma.
+
+This setup is great because it allows you to do channel authorization on a per request basis.
+
+```ruby
+# config/routes.rb
+# ...
+
+@allowed_channels = ->(request) {
+  user_id = request.session['user_id']
+  user_id ? ['broadcast', "player_#{user_id}"] : []
+}
+get 'stream', to: Jugglite::App.new(nil, namespace: "app:#{Rails.env}:", allowed_channels: @allowed_channels)
+
+# ...
+```
 
 ### Stand-alone binary
 
@@ -30,7 +49,7 @@ You can run the binary from any terminal like this (these options are the defaul
 
 `jugglite --address 0.0.0.0 --port 3000 --max-conns 1024`
 
-### As Rack middleware (development)
+### As Rack middleware
 
 Add it to your `config.ru` file and make sure your application runs using Thin:
 
@@ -41,7 +60,7 @@ use Jugglite::App, path: '/stream', namespace: 'myapp:' if ENV['RACK_ENV'] == 'd
 run MyRails::Application
 ```
 
-### Behind Nginx (production)
+### Behind Nginx
 
 NOTE: because the html5 SSE implementation requires the connection to have the same hostname and port, you'll need to add a reverse proxy in front of your app and jugglite.
 
@@ -89,7 +108,6 @@ server {
   }
 }
 ```
-
 
 ## Client Usage
 

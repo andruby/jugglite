@@ -81,7 +81,8 @@ module Jugglite
     end
 
     def channels_for_request(request)
-      channels = Array(request.params["channel"].split(","))
+      channel_string = request.params["channel"] || ""
+      channels = Array(channel_string.split(","))
       # Sanitize channels
       channels = channels & allowed_channels(request) if @options[:allowed_channels]
       channels.map! { |channel| @options[:namespace] + channel }

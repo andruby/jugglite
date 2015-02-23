@@ -1,3 +1,7 @@
+## 0.6.0 / 2015-02-23
+
+* Don't break when channel parameter is blank
+
 ## 0.5.0 / 2014-05-03
 
 * New option: +allowed_channels+ to limit/authorize which channels a request can listen to

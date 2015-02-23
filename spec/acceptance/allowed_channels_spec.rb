@@ -52,6 +52,31 @@ describe "allowed_channels" do
     end
   end
 
+  describe "no channel" do
+    before(:each) do
+      @jugglite = Jugglite::App.new(nil, allowed_channels: ->(request) { [@channel2] })
+      start_server(@jugglite)
+    end
+
+    it "allows blank channel" do
+      Net::HTTP.start(@host, @port) do |http|
+        request = Net::HTTP::Get.new("/")
+
+        body = ""
+        http.request(request) do |response|
+          response.read_body do |chunk|
+            body << chunk
+            body.should include(": registered to channels: ")
+            body.should_not include(@channel1)
+            http.finish
+            break
+          end
+          break
+        end
+      end
+    end
+  end
+
   describe "as a Proc" do
     before(:each) do
       @jugglite = Jugglite::App.new(nil, allowed_channels: ->(request) { [@channel2] })

@@ -17,6 +17,9 @@ module Jugglite
     # +allowed_channels+ :
     #  * an array with allowed channel names
     #  * a proc that takes a Rack::Request and returns an array of allowed channels for that particular request
+    # +on_register+ : a Proc that takes a Sse::Connection as argument and is called right after a connection is initiated.
+    # +on_unregister+ : a Proc that takes a Sse::Connection as argument and is called right after a connection is initiated.
+    # The same Sse::Connection object will be passed to the on_register and on_unregister callbacks. You can for example use the +connection.data+ attribute to store an identifier.
     def initialize(app = nil, options = {})
       @app = app
       @options = {
@@ -100,10 +103,12 @@ module Jugglite
     def register_connection(connection)
       requested_channels = channels_for_request(connection.request)
       subscribe_to_new_channels(requested_channels - @redis_channels)
+      @options[:on_register].call(connection) if @options[:on_register]
       @subscription_map[connection] = requested_channels
     end
 
     def unregister_connection(connection)
+      @options[:on_unregister].call(connection) if @options[:on_register]
       @subscription_map.delete(connection)
     end
 

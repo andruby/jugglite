@@ -2,6 +2,9 @@ module Jugglite
   class SseConnection
     attr_reader :body, :request
 
+    # +data+ can hold optional information to track a connection
+    attr_accessor :data
+
     def initialize(request)
       @request = request
       @longpolling = request.xhr?

@@ -36,7 +36,19 @@ This setup is great because it allows you to do channel authorization on a per r
   user_id = request.session['user_id']
   user_id ? ['broadcast', "player_#{user_id}"] : []
 }
-get 'stream', to: Jugglite::App.new(nil, namespace: "app:#{Rails.env}:", allowed_channels: @allowed_channels)
+
+@on_register = ->(connection) {
+  # Store something in connection.data
+  # connection.request holds the Rack::Request
+}
+
+@on_unregister = ->(connection) {
+  # Called when the connection is dropped or closed.
+  # You can access the connection.data set in the +on_register+ call
+  # Or use the connect.request.
+}
+
+get 'stream', to: Jugglite::App.new(nil, namespace: "app:#{Rails.env}:", allowed_channels: @allowed_channels, on_register: @on_register, on_unregister: @on_unregister)
 
 # ...
 ```
